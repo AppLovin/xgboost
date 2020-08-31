@@ -79,7 +79,7 @@ private[this] case class XGBoostExecutionParams(
     cacheTrainingSet: Boolean,
     treeMethod: Option[String],
     isLocal: Boolean,
-    killSparkContext: Boolean) {
+    killSparkContextOnWorkerFailure: Boolean) {
 
   private var rawParamMap: Map[String, Any] = _
 
@@ -218,7 +218,7 @@ private[this] class XGBoostExecutionParamsFactory(rawParams: Map[String, Any], s
     val cacheTrainingSet = overridedParams.getOrElse("cache_training_set", false)
       .asInstanceOf[Boolean]
 
-    val killSparkContext = overridedParams.getOrElse("kill_spark_context", true)
+    val killSparkContext = overridedParams.getOrElse("kill_spark_context_on_worker_failure", true)
       .asInstanceOf[Boolean]
 
     val xgbExecParam = XGBoostExecutionParams(nWorkers, round, useExternalMemory, obj, eval,
@@ -560,7 +560,7 @@ object XGBoost extends Serializable {
         val parallelismTracker = new SparkParallelismTracker(sc,
           xgbExecParams.timeoutRequestWorkers,
           xgbExecParams.numWorkers,
-          xgbExecParams.killSparkContext)
+          xgbExecParams.killSparkContextOnWorkerFailure)
         val rabitEnv = tracker.getWorkerEnvs
         val boostersAndMetrics = if (hasGroup) {
           trainForRanking(transformedTrainingData.left.get, xgbExecParams, rabitEnv, prevBooster,
@@ -600,7 +600,7 @@ object XGBoost extends Serializable {
       case t: Throwable =>
         // if the job was aborted due to an exception
         logger.error("the job was aborted due to ", t)
-        if (xgbExecParams.killSparkContext) {
+        if (xgbExecParams.killSparkContextOnWorkerFailure) {
           trainingData.sparkContext.stop()
         }
         throw t
