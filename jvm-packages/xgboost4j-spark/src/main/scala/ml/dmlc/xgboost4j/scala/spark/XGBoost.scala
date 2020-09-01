@@ -77,8 +77,6 @@ private[this] case class XGBoostExecutionParams(
     xgbInputParams: XGBoostExecutionInputParams,
     earlyStoppingParams: XGBoostExecutionEarlyStoppingParams,
     cacheTrainingSet: Boolean,
-    treeMethod: Option[String],
-    isLocal: Boolean,
     killSparkContextOnWorkerFailure: Boolean) {
 
   private var rawParamMap: Map[String, Any] = _
