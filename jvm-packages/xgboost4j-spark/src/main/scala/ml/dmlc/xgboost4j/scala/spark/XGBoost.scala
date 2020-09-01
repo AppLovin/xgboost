@@ -228,8 +228,6 @@ private[this] class XGBoostExecutionParamsFactory(rawParams: Map[String, Any], s
       inputParams,
       xgbExecEarlyStoppingParams,
       cacheTrainingSet,
-      treeMethod,
-      isLocal,
       killSparkContext)
     xgbExecParam.setRawParamMap(overridedParams)
     xgbExecParam
