@@ -215,16 +215,7 @@ struct EvalError {
     }
   }
   const char *Name() const {
-    static std::string name;
-    if (has_param_) {
-      std::ostringstream os;
-      os << "error";
-      if (threshold_ != 0.5f) os << '@' << threshold_;
-      name = os.str();
-      return name.c_str();
-    } else {
-      return "error";
-    }
+    return "error";
   }
 
   XGBOOST_DEVICE bst_float EvalRow(
@@ -300,11 +291,7 @@ struct EvalTweedieNLogLik {
         << "tweedie variance power must be in interval [1, 2)";
   }
   const char *Name() const {
-    static std::string name;
-    std::ostringstream os;
-    os << "tweedie-nloglik@" << rho_;
-    name = os.str();
-    return name.c_str();
+    return "tweedie-nloglik";
   }
 
   XGBOOST_DEVICE bst_float EvalRow(bst_float y, bst_float p) const {
