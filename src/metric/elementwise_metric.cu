@@ -215,7 +215,15 @@ struct EvalError {
     }
   }
   const char *Name() const {
-    return "error";
+    if (has_param_) {
+      std::ostringstream os;
+      os << "error";
+      if (threshold_ != 0.5f) os << '@' << threshold_;
+      name_ = os.str();
+      return name_.c_str();
+    } else {
+      return "error";
+    }
   }
 
   XGBOOST_DEVICE bst_float EvalRow(
@@ -231,6 +239,7 @@ struct EvalError {
  private:
   bst_float threshold_;
   bool has_param_;
+  std::string name_;
 };
 
 struct EvalPoissonNegLogLik {
@@ -291,7 +300,10 @@ struct EvalTweedieNLogLik {
         << "tweedie variance power must be in interval [1, 2)";
   }
   const char *Name() const {
-    return "tweedie-nloglik";
+    std::ostringstream os;
+    os << "tweedie-nloglik@" << rho_;
+    name_ = os.str();
+    return name_.c_str();
   }
 
   XGBOOST_DEVICE bst_float EvalRow(bst_float y, bst_float p) const {
@@ -305,6 +317,7 @@ struct EvalTweedieNLogLik {
 
  protected:
   bst_float rho_;
+  std::string name_;
 };
 /*!
  * \brief base class of element-wise evaluation
