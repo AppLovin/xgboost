@@ -206,24 +206,20 @@ struct EvalRowMPHE {
 struct EvalError {
   explicit EvalError(const char* param) {
     if (param != nullptr) {
-      CHECK_EQ(sscanf(param, "%f", &threshold_), 1)
-          << "unable to parse the threshold value for the error metric";
-      has_param_ = true;
-    } else {
-      threshold_ = 0.5f;
-      has_param_ = false;
-    }
-  }
-  const char *Name() const {
-    if (has_param_) {
       std::ostringstream os;
       os << "error";
+      CHECK_EQ(sscanf(param, "%f", &threshold_), 1)
+        << "unable to parse the threshold value for the error metric";
       if (threshold_ != 0.5f) os << '@' << threshold_;
       name_ = os.str();
-      return name_.c_str();
     } else {
-      return "error";
+      threshold_ = 0.5f;
+      name_ = "error";
     }
+  }
+  
+  const char *Name() const {
+    return name_.c_str();
   }
 
   XGBOOST_DEVICE bst_float EvalRow(
@@ -298,11 +294,12 @@ struct EvalTweedieNLogLik {
     rho_ = atof(param);
     CHECK(rho_ < 2 && rho_ >= 1)
         << "tweedie variance power must be in interval [1, 2)";
-  }
-  const char *Name() const {
     std::ostringstream os;
     os << "tweedie-nloglik@" << rho_;
     name_ = os.str();
+  }
+  
+  const char *Name() const {
     return name_.c_str();
   }
 
@@ -316,8 +313,8 @@ struct EvalTweedieNLogLik {
   }
 
  protected:
+  std::string name_; 
   bst_float rho_;
-  std::string name_;
 };
 /*!
  * \brief base class of element-wise evaluation
