@@ -845,6 +845,14 @@ uint64_t SparsePage::Push(const AdapterBatchT& batch, float missing, int nthread
           std::max(max_columns, static_cast<uint64_t>(element.column_idx + 1));
       if (!common::CheckNAN(element.value) && element.value != missing) {
         size_t key = element.row_idx - base_rowid;
+        
+        // APPLOVIN: DEBUG INVALID KEY 
+        if (key <= builder_base_row_offset) {
+            LOG(WARNING) << "PREFAIL: Key is less then builder base row. key=" << key 
+                    << ", builder_base_row_offset=" << builder_base_row_offset 
+                    << ", element.row_idx=" << element.row_idx << ", base_rowid=" 
+                    << base_rowid << ", batch_size=" << batch_size << ", i=" << i;
+        }
         // Adapter row index is absolute, here we want it relative to
         // current page
         CHECK_GE(key, builder_base_row_offset);
