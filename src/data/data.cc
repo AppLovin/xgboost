@@ -847,11 +847,12 @@ uint64_t SparsePage::Push(const AdapterBatchT& batch, float missing, int nthread
         size_t key = element.row_idx - base_rowid;
         
         // APPLOVIN: DEBUG INVALID KEY 
-        if (key <= builder_base_row_offset) {
+        if (key < builder_base_row_offset) {
             LOG(WARNING) << "PREFAIL: Key is less then builder base row. key=" << key 
                     << ", builder_base_row_offset=" << builder_base_row_offset 
-                    << ", element.row_idx=" << element.row_idx << ", base_rowid=" 
-                    << base_rowid << ", batch_size=" << batch_size << ", i=" << i;
+                    << ", element.row_idx=" << element.row_idx 
+                    << ", base_rowid=" << base_rowid << ", batch_size=" << batch_size 
+                    << ", i=" << i << ", expected_rows=" << expected_rows;
         }
         // Adapter row index is absolute, here we want it relative to
         // current page
